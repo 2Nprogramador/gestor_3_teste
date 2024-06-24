@@ -63,7 +63,7 @@ def entrada_estoque():
     if st.button("Adicionar ao Estoque"):
         novo_produto = pd.DataFrame(
             {"Produto": [produto], "Lote": [lote], "Quantidade": [quantidade], "Data de Entrada": [data_entrada],
-             "Data de Validade": [data_validade], "Custo (R$)": [custo], "Valor de Venda (R$):[valor_venda]"})
+             "Data de Validade": [data_validade], "Custo (R$)": [custo], "Valor de Venda (R$)":[valor_venda]})
         registro_estoque_df = pd.concat([registro_estoque_df, novo_produto], ignore_index=True)
         st.success(f"{quantidade} unidades de '{produto}' (Lote: {lote}) adicionadas ao estoque.")
         salvar_dados()
