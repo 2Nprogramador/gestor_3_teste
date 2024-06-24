@@ -2,17 +2,18 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-# Função para inicializar os DataFrames no session state
+# Função para inicializar os DataFrames no cache
+@st.cache_data
 def init_dataframes():
-    if "vendas_df" not in st.session_state:
-        st.session_state.vendas_df = pd.DataFrame(
-            columns=["Código da Venda", "Produto", "Lote", "Quantidade", "Método de Pagamento", "Data da Venda", "Valor Unitário (R$)", "Valor Total (R$)"])
-    if "registro_estoque_df" not in st.session_state:
-        st.session_state.registro_estoque_df = pd.DataFrame(
-            columns=["Produto", "Lote", "Quantidade", "Data de Entrada", "Data de Validade", "Custo (R$)", "Valor de Venda (R$)"])
+    vendas_df = pd.DataFrame(
+        columns=["Código da Venda", "Produto", "Lote", "Quantidade", "Método de Pagamento", "Data da Venda", "Valor Unitário (R$)", "Valor Total (R$)"])
+    registro_estoque_df = pd.DataFrame(
+        columns=["Produto", "Lote", "Quantidade", "Data de Entrada", "Data de Validade", "Custo (R$)", "Valor de Venda (R$)"])
+    return vendas_df, registro_estoque_df
 
-# Inicializar os DataFrames
-init_dataframes()
+# Carregar os DataFrames do cache
+if 'vendas_df' not in st.session_state or 'registro_estoque_df' not in st.session_state:
+    st.session_state.vendas_df, st.session_state.registro_estoque_df = init_dataframes()
 
 # DataFrames do session state
 vendas_df = st.session_state.vendas_df
@@ -41,6 +42,7 @@ def salvar_dados():
     vendas_df = pd.concat([vendas_df, vendas_temp_df], ignore_index=True)
     st.session_state.vendas_df = vendas_df
     st.session_state.registro_estoque_df = registro_estoque_df
+    st.cache_data.clear()
 
 # Página de Entrada de Estoque
 def entrada_estoque():
@@ -63,7 +65,7 @@ def entrada_estoque():
     if st.button("Adicionar ao Estoque"):
         novo_produto = pd.DataFrame(
             {"Produto": [produto], "Lote": [lote], "Quantidade": [quantidade], "Data de Entrada": [data_entrada],
-             "Data de Validade": [data_validade], "Custo (R$)": [custo], "Valor de Venda (R$)":[valor_venda]})
+             "Data de Validade": [data_validade], "Custo (R$)": [custo], "Valor de Venda (R$)": [valor_venda]})
         registro_estoque_df = pd.concat([registro_estoque_df, novo_produto], ignore_index=True)
         st.success(f"{quantidade} unidades de '{produto}' (Lote: {lote}) adicionadas ao estoque.")
         salvar_dados()
