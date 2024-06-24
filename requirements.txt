@@ -1,6 +1,4 @@
 streamlit
 pandas
 datetime
-requests
-base64
-json
+
